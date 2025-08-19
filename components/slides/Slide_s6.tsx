@@ -54,14 +54,13 @@ services:
       path: /health
 \`\`\`
 
-\`\`\`mermaid
-flowchart TD
-A[Build fails / wrong runtime] --> B[Add Procfile or runtime.txt]
-B --> C{Fixed?}
-C -- Yes --> D[Rebuild with Buildpacks]
-C -- No --> E[Consider Dockerfile as last resort]
-F[Data missing / resets] --> G[Use Managed DB/Spaces; run migrations]
-H[Intermittent 502s] --> I[Add health_check + set min/max instances]
+\`\`\`mermaid flowchart TD
+  A[Build fails / wrong runtime] --> B[Add Procfile or runtime.txt]
+  B --> C{Fixed?}
+  C -- Yes --> D[Rebuild with Buildpacks]
+  C -- No --> E[Consider Dockerfile as last resort]
+  F[Data missing / resets] --> G[Use Managed DB/Spaces; run migrations]
+  H[Intermittent 502s] --> I[Add health_check + set min/max instances]
 \`\`\`
 `;
   const mermaidRef = useRef(0);
