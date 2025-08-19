@@ -60,11 +60,11 @@ npx autocannon -c 50 -d 60 https://<your-app>.ondigitalocean.app/
 \`\`\`
 \`\`\`mermaid
 flowchart LR
-  A[Git Repo] --> B[Buildpacks Detect\n(Node, Python, etc.)]
+  A[Git Repo] --> B["Buildpacks Detect\n(Node, Python, etc.)"]
   B --> C[OCI Image Built\nwith caching]
   C --> D[Deploy to App Platform]
   D --> E[Default URL + TLS\nondigitalocean.app]
-  E --> F[Autoscale on load\n(min/max instances)]
+  E --> F["Autoscale on load\n(min/max instances)"]
   D --> G[Logs & Metrics\nUI/CLI/Forwarding]
 \`\`\``;
   const mermaidRef = useRef(0);

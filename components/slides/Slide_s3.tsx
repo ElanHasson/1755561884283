@@ -32,7 +32,7 @@ flowchart LR
   F --> G
   G --> H[Rolling Deploy]
   H --> I[Web Service]
-  H --> J[Static Site (CDN)]
+  H --> J["Static Site (CDN)"]
   H --> K[Worker]
   I --> L[Routing + TLS]
   J --> L
