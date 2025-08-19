@@ -2,13 +2,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function Slide() {
   const markdown = `- **Adopt paved roads: Buildpacks + app spec**
   - Start with Cloud Native Buildpacks; skip bespoke Dockerfiles and bash build glue
   - Keep an \`app.yaml\` in the repo for GitOps-style, repeatable deploys
   - Map custom domains; App Platform handles TLS certs and renewals automatically
-
 \`\`\`yaml
 # app.yaml (excerpt)
 name: myapp
@@ -38,12 +39,10 @@ log_destinations:
       api_key: \${DATADOG_API_KEY}
       region: US
 \`\`\`
-
 - **12‑Factor config, not snowflake servers**
   - Use env vars for config and secrets; avoid filesystem persistence
   - Attach Managed Databases and Spaces for durable data
   - Separate staging/prod apps with distinct secrets
-
 \`\`\`yaml
 # Secrets and environment separation
 envs:
@@ -53,30 +52,24 @@ envs:
     value: \${REDIS_URL}
     type: SECRET
 \`\`\`
-
 - **Health checks + safe deploys**
   - Provide a lightweight readiness endpoint; enable rolling deploys
   - Fail fast on unhealthy builds to avoid serving bad releases
-
 \`\`\`js
 // Node/Express readiness
 app.get('/health', (req, res) => {
   res.status(200).json({ ok: true, uptime: process.uptime() });
 });
 \`\`\`
-
 - **Observability by default**
   - Use structured logs; forward to your provider in one click/app spec
   - Monitor CPU, memory, request metrics; set alerts in your APM
-
 \`\`\`json
 {"ts":"2025-08-18T12:00:00Z","level":"info","evt":"user_signup","user_id":"123","plan":"pro"}
 \`\`\`
-
 - **Scale smart + isolate workloads**
   - Right-size instances; set autoscaling ranges per component
   - Split API, static site, and workers so each scales independently
-
 \`\`\`mermaid
 flowchart TD
   A[git push] --> B[Buildpacks detect + build]
@@ -86,8 +79,7 @@ flowchart TD
   D --> F[Logs + Metrics]
   F --> G[Alerts/Forwarding]
   D --> H[Autoscale per component]
-\`\`\`
-`;
+\`\`\``;
   const mermaidRef = useRef(0);
   
   useEffect(() => {
@@ -138,12 +130,21 @@ flowchart TD
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         components={{
-          code({node, className, children, ...props}: any) {
-            const match = /language-(w+)/.exec(className || '');
+          code({node, inline, className, children, ...props}: any) {
+            const match = /language-(\w+)/.exec(className || '');
             const language = match ? match[1] : '';
-            const isInline = !className;
             
-            if (!isInline && language === 'mermaid') {
+            // Handle inline code
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            }
+            
+            // Handle mermaid diagrams
+            if (language === 'mermaid') {
               return (
                 <pre className="language-mermaid">
                   <code>{String(children).replace(/\n$/, '')}</code>
@@ -151,10 +152,28 @@ flowchart TD
               );
             }
             
+            // Handle code blocks with syntax highlighting
+            if (language) {
+              return (
+                <SyntaxHighlighter
+                  language={language}
+                  style={atomDark}
+                  showLineNumbers={true}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              );
+            }
+            
+            // Default code block without highlighting
             return (
-              <code className={className} {...props}>
-                {children}
-              </code>
+              <pre>
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              </pre>
             );
           }
         }}

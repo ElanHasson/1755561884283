@@ -2,6 +2,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function Slide() {
   const markdown = `- Connect repo; no Dockerfile needed — Buildpacks auto-detect and build
@@ -9,7 +11,6 @@ export default function Slide() {
 - Set min/max instances; platform autoscale handles bursts
 - View live logs and metrics; forward logs to your provider
 - Keep it repeatable with an app spec (YAML)
-
 \`\`\`javascript
 // index.js — tiny API with health check and structured logs
 const express = require('express');
@@ -28,7 +29,6 @@ app.listen(PORT, () => {
   console.log(JSON.stringify({ level: 'info', msg: \`listening on \${PORT}\`, ts: new Date().toISOString() }));
 });
 \`\`\`
-
 \`\`\`yaml
 # app.yaml — minimal web service (Buildpacks build from source)
 name: demo-app
@@ -50,7 +50,6 @@ services:
       - key: NODE_ENV
         value: production
 \`\`\`
-
 \`\`\`bash
 # Logs (CLI): stream app logs during the demo
 # Get the app ID from the UI or \`doctl apps list\`
@@ -59,7 +58,6 @@ doctl apps logs <APP_ID> --follow --component api
 # Optional quick load to trigger autoscale (in another terminal)
 npx autocannon -c 50 -d 60 https://<your-app>.ondigitalocean.app/
 \`\`\`
-
 \`\`\`mermaid
 flowchart LR
   A[Git Repo] --> B[Buildpacks Detect\n(Node, Python, etc.)]
@@ -68,8 +66,7 @@ flowchart LR
   D --> E[Default URL + TLS\nondigitalocean.app]
   E --> F[Autoscale on load\n(min/max instances)]
   D --> G[Logs & Metrics\nUI/CLI/Forwarding]
-\`\`\`
-`;
+\`\`\``;
   const mermaidRef = useRef(0);
   
   useEffect(() => {
@@ -120,12 +117,21 @@ flowchart LR
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         components={{
-          code({node, className, children, ...props}: any) {
-            const match = /language-(w+)/.exec(className || '');
+          code({node, inline, className, children, ...props}: any) {
+            const match = /language-(\w+)/.exec(className || '');
             const language = match ? match[1] : '';
-            const isInline = !className;
             
-            if (!isInline && language === 'mermaid') {
+            // Handle inline code
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            }
+            
+            // Handle mermaid diagrams
+            if (language === 'mermaid') {
               return (
                 <pre className="language-mermaid">
                   <code>{String(children).replace(/\n$/, '')}</code>
@@ -133,10 +139,28 @@ flowchart LR
               );
             }
             
+            // Handle code blocks with syntax highlighting
+            if (language) {
+              return (
+                <SyntaxHighlighter
+                  language={language}
+                  style={atomDark}
+                  showLineNumbers={true}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              );
+            }
+            
+            // Default code block without highlighting
             return (
-              <code className={className} {...props}>
-                {children}
-              </code>
+              <pre>
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              </pre>
             );
           }
         }}

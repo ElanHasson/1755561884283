@@ -38,10 +38,18 @@ body {
   font-size: 1.5rem;
   line-height: 2;
   max-width: 800px;
+  padding-left: 1.5rem;
 }
 
 .slide li {
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
+}
+
+.slide ul ul, .slide ol ol, .slide ul ol, .slide ol ul {
+  font-size: 1.3rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 2rem;
 }
 
 .title-slide {
@@ -139,27 +147,31 @@ body {
 
 .navigation {
   position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 15px;
   align-items: center;
   background: rgba(0, 0, 0, 0.3);
-  padding: 15px 30px;
-  border-radius: 50px;
+  padding: 20px 15px;
+  border-radius: 20px;
   backdrop-filter: blur(10px);
+  z-index: 1000;
 }
 
 .navigation button {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px 15px;
+  font-size: 14px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
+  min-width: 80px;
 }
 
 .navigation button:hover:not(:disabled) {
@@ -169,4 +181,10 @@ body {
 .navigation button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.navigation span {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 5px 0;
 }

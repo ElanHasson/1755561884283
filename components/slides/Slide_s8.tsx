@@ -2,6 +2,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function Slide() {
   const markdown = `- Ship today in 5 steps
@@ -10,11 +12,9 @@ export default function Slide() {
   - Expose \`/health\` for safe rolling deploys
   - Map custom domain → TLS auto-provisioned/renewed
   - Set min/max instances; enable log forwarding
-
 - Keep it reproducible
   - Commit an \`app.yaml\` in your repo (GitOps-friendly)
   - Stateless app; use Managed Databases/Spaces for persistence
-
 \`\`\`yaml
 # app.yaml — minimal starter
 name: myapp
@@ -36,7 +36,6 @@ services:
         value: \${DATABASE_URL}
         type: SECRET
 \`\`\`
-
 \`\`\`mermaid
 flowchart TD
   A[Push to main] --> B[Buildpacks build image]
@@ -44,8 +43,7 @@ flowchart TD
   C --> D[TLS & DNS auto]
   D --> E[Autoscale + Logs/Metrics]
   E --> F[Sleep well]
-\`\`\`
-`;
+\`\`\``;
   const mermaidRef = useRef(0);
   
   useEffect(() => {
@@ -96,12 +94,21 @@ flowchart TD
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         components={{
-          code({node, className, children, ...props}: any) {
-            const match = /language-(w+)/.exec(className || '');
+          code({node, inline, className, children, ...props}: any) {
+            const match = /language-(\w+)/.exec(className || '');
             const language = match ? match[1] : '';
-            const isInline = !className;
             
-            if (!isInline && language === 'mermaid') {
+            // Handle inline code
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            }
+            
+            // Handle mermaid diagrams
+            if (language === 'mermaid') {
               return (
                 <pre className="language-mermaid">
                   <code>{String(children).replace(/\n$/, '')}</code>
@@ -109,10 +116,28 @@ flowchart TD
               );
             }
             
+            // Handle code blocks with syntax highlighting
+            if (language) {
+              return (
+                <SyntaxHighlighter
+                  language={language}
+                  style={atomDark}
+                  showLineNumbers={true}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              );
+            }
+            
+            // Default code block without highlighting
             return (
-              <code className={className} {...props}>
-                {children}
-              </code>
+              <pre>
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              </pre>
             );
           }
         }}
