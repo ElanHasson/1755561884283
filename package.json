@@ -1,6 +1,9 @@
 {
   "name": "using-digitalocean-s-app-platform-to-remove-devops-pain",
   "version": "1.0.0",
+  "cacheDirectories": [
+    ".next/cache"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
