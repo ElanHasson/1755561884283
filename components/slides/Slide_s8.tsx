@@ -33,7 +33,7 @@ services:
       path: /health
     envs:
       - key: DATABASE_URL
-        value: ${DATABASE_URL}
+        value: \${DATABASE_URL}
         type: SECRET
 \`\`\`
 

@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(JSON.stringify({ level: 'info', msg: \`listening on ${PORT}\`, ts: new Date().toISOString() }));
+  console.log(JSON.stringify({ level: 'info', msg: \`listening on \${PORT}\`, ts: new Date().toISOString() }));
 });
 \`\`\`
 

@@ -38,12 +38,12 @@ services:
       path: /health
     envs:
       - key: DATABASE_URL
-        value: ${DATABASE_URL}
+        value: \${DATABASE_URL}
         type: SECRET
 log_destinations:
   - name: datadog
     datadog:
-      api_key: ${DATADOG_API_KEY}
+      api_key: \${DATADOG_API_KEY}
       region: US
 domains:
   - domain: app.example.com

@@ -35,7 +35,7 @@ services:
     http_port: 3000
     envs:
       - key: DATABASE_URL
-        value: ${DATABASE_URL}
+        value: \${DATABASE_URL}
         scope: RUN_AND_BUILD_TIME
         type: SECRET
 \`\`\`

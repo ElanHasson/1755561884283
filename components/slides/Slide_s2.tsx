@@ -31,7 +31,7 @@ services:
       path: /health
     envs:
       - key: DATABASE_URL
-        value: ${DATABASE_URL}
+        value: \${DATABASE_URL}
         scope: RUN_AND_BUILD_TIME
         type: SECRET
 domains:
@@ -39,7 +39,7 @@ domains:
 log_destinations:
   - name: datadog
     datadog:
-      api_key: ${DATADOG_API_KEY}
+      api_key: \${DATADOG_API_KEY}
       region: US
 \`\`\`
 
